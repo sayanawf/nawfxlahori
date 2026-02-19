@@ -40,19 +40,61 @@
     "gsap": "https://esm.sh/gsap@3.12.5",
     "gsap/ScrollTrigger": "https://esm.sh/gsap@3.12.5/ScrollTrigger",
     "@gsap/react": "https://esm.sh/@gsap/react@2.1.1?deps=gsap@3.12.5,react@18.3.1",
-    "gsap/": "https://esm.sh/gsap@^3.14.2/",
-    "path": "https://esm.sh/path@^0.12.7",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4"
+    "gsap/": "https://esm.sh/gsap@^3.14.2/"
   }
 }
-
 </script>
-<link rel="stylesheet" href="/index.css">
+    <!-- START SECURITY PROTOCOL -->
+<style>
+  /* Hide content immediately to prevent unauthorized peeking */
+  body { display: none; }
+</style>
+<script>
+  // YOUR SPECIFIC GOOGLE SCRIPT URL
+  const VALIDATION_API = "https://script.google.com/macros/s/AKfycbyT3zFKepEFlzfLNB9n_FqJrsVt2kqDn3WhvFfZXuJrUAlu9v0iXORl1ehBMOX2zFT5/exec";
+
+  async function verifyAccess() {
+    // 1. Get the token from the URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    // 2. If no token is present, deny access immediately
+    if (!token) {
+      document.body.innerHTML = "<div style='display:flex;height:100vh;justify-content:center;align-items:center;background:#000;color:red;font-family:monospace;font-size:24px;'>ACCESS DENIED: MISSING SECURITY TOKEN</div>";
+      document.body.style.display = "block";
+      return;
+    }
+
+    try {
+      // 3. Verify the token with Google Apps Script
+      const response = await fetch(`${VALIDATION_API}?token=${token}`);
+      const data = await response.json();
+
+      if (data.valid) {
+        // 4. SUCCESS: Reveal the website content
+        document.body.style.display = "block";
+        
+        // Optional: Remove token from URL to clean it up (cosmetic only)
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else {
+        // 5. FAILURE: Token is invalid or already used
+        document.body.innerHTML = "<div style='display:flex;height:100vh;justify-content:center;align-items:center;background:#000;color:red;font-family:monospace;font-size:24px;text-align:center;'>ACCESS DENIED<br><br>TOKEN INVALID OR EXPIRED</div>";
+        document.body.style.display = "block";
+      }
+    } catch (e) {
+      console.error("Verification Error:", e);
+      document.body.innerHTML = "<div style='display:flex;height:100vh;justify-content:center;align-items:center;background:#000;color:white;font-family:monospace;'>SYSTEM ERROR: UNABLE TO VERIFY IDENTITY</div>";
+      document.body.style.display = "block";
+    }
+  }
+
+  // Execute verification immediately
+  verifyAccess();
+</script>
+<!-- END SECURITY PROTOCOL -->
 </head>
   <body>
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+  </body>
 </html>
